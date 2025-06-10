@@ -1,0 +1,24 @@
+[package]
+name = "dg-clock-mult"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+dg-traits.workspace = true
+
+embassy-time.workspace = true
+
+
+
+[dev-dependencies]
+embassy-time = { workspace = true, features = ["std", "generic-queue-8"] }
+#embassy-executor = { workspace = true, features = ["arch-std", "executor-thread"] }
+embassy-futures.workspace = true
+tokio.workspace = true
+
+[lints]
+workspace = true

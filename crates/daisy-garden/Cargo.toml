@@ -1,0 +1,37 @@
+[package]
+name = "daisy-garden"
+description = "Top-level firmware crate."
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+# readme = "README.md"
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lints]
+workspace = true
+
+
+[features]
+
+[dependencies]
+dg-traits.workspace = true
+dg-clock-mult.workspace = true
+
+cortex-m.workspace = true
+cortex-m-rt.workspace = true
+critical-section.workspace = true
+defmt.workspace = true
+defmt-rtt.workspace = true
+daisy-embassy.workspace = true
+embassy-executor = { workspace = true, features = ["task-arena-size-32768", "arch-cortex-m", "executor-thread", "executor-interrupt", "defmt"] }
+embassy-stm32.workspace = true
+embassy-time = { workspace = true, features = ["defmt", "defmt-timestamp-uptime", "tick-hz-32_768"] }
+embassy-sync.workspace = true
+panic-probe.workspace = true
+
+
+[dev-dependencies]
+
