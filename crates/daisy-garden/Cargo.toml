@@ -18,7 +18,7 @@ workspace = true
 
 [dependencies]
 dg-traits.workspace = true
-dg-clock-mult.workspace = true
+dg-clock.workspace = true
 
 cortex-m.workspace = true
 cortex-m-rt.workspace = true

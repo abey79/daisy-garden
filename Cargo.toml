@@ -15,7 +15,7 @@ version = "0.1.0-alpha.1"
 [workspace.dependencies]
 # own crates
 daisy-garden = { path = "crates/daisy-garden", version = "=0.1.0-alpha.1", default-features = false }
-dg-clock-mult = { path = "crates/dg-clock-mult", version = "=0.1.0-alpha.1", default-features = false }
+dg-clock = { path = "crates/dg-clock", version = "=0.1.0-alpha.1", default-features = false }
 dg-traits = { path = "crates/dg-traits", version = "=0.1.0-alpha.1", default-features = false }
 
 # external crates

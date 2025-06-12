@@ -133,7 +133,7 @@ async fn test_clock_forward() {
     let mut pulses = Vec::new();
 
     {
-        let mut clock_forward_mut = pin!(dg_clock_mult::clock_forward(
+        let mut clock_forward_mut = pin!(dg_clock::clock_forward(
             MockGateIn::new([
                 now + Duration::from_millis(10),
                 now + Duration::from_millis(20),
@@ -168,7 +168,7 @@ async fn test_clock_forward_drops_pulse() {
     let mut pulses = Vec::new();
 
     {
-        let mut clock_forward_mut = pin!(dg_clock_mult::clock_forward(
+        let mut clock_forward_mut = pin!(dg_clock::clock_forward(
             MockGateIn::new([
                 now + Duration::from_millis(10),
                 now + Duration::from_millis(20),

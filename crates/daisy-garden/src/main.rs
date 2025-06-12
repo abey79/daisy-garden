@@ -52,7 +52,7 @@ async fn blink(mut led: UserLed<'static>) {
 
 #[embassy_executor::task(pool_size = 2)]
 async fn clock_forward(gate_in: ExtiInput<'static>, gate_out: Output<'static>, duration: Duration) {
-    dg_clock_mult::clock_forward(ExtiInputGateIn(gate_in), OutputGateOut(gate_out), duration).await;
+    dg_clock::clock_forward(ExtiInputGateIn(gate_in), OutputGateOut(gate_out), duration).await;
 }
 
 struct ExtiInputGateIn<'a>(ExtiInput<'a>);

@@ -191,7 +191,7 @@ dependencies = [
  "daisy-embassy",
  "defmt 0.3.100",
  "defmt-rtt",
- "dg-clock-mult",
+ "dg-clock",
  "dg-traits",
  "embassy-executor",
  "embassy-stm32",
@@ -287,7 +287,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "dg-clock-mult"
+name = "dg-clock"
 version = "0.1.0-alpha.1"
 dependencies = [
  "dg-traits",
