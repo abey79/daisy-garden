@@ -139,7 +139,7 @@ async fn test_clock_forward() {
                 now + Duration::from_millis(20),
             ]),
             MockGateOut::new(&mut pulses),
-            Duration::from_millis(10),
+            Duration::from_millis(5),
         ));
 
         let mut end_fut = pin!(async {
@@ -156,10 +156,10 @@ async fn test_clock_forward() {
 
     assert_eq!(pulses.len(), 2);
     pulses[0].assert_shortly_after(now + Duration::from_millis(10));
-    assert_eq!(pulses[0].duration, Duration::from_millis(10));
+    assert_eq!(pulses[0].duration, Duration::from_millis(5));
 
     pulses[1].assert_shortly_after(now + Duration::from_millis(20));
-    assert_eq!(pulses[1].duration, Duration::from_millis(10));
+    assert_eq!(pulses[1].duration, Duration::from_millis(5));
 }
 
 #[tokio::test]

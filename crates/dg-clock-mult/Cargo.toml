@@ -13,7 +13,6 @@ dg-traits.workspace = true
 embassy-time.workspace = true
 
 
-
 [dev-dependencies]
 embassy-time = { workspace = true, features = ["std", "generic-queue-8"] }
 #embassy-executor = { workspace = true, features = ["arch-std", "executor-thread"] }

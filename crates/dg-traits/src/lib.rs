@@ -3,12 +3,6 @@
 
 use embassy_time::{Duration, Instant};
 
-pub trait TimeSource {
-    fn now(&self) -> Instant;
-    async fn sleep(&self, duration: Duration);
-    async fn sleep_until(&self, instant: Instant);
-}
-
 pub trait GateIn {
     async fn wait(&mut self) -> Instant;
 }

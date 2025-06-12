@@ -1,0 +1,34 @@
+# This is a configuration file for the bacon tool
+# More info at https://github.com/Canop/bacon
+
+default_job = "clippy"
+
+[jobs]
+
+[jobs.clippy]
+command = ["cargo", "clippy", "--color=always"]
+need_stdout = false
+
+
+[jobs.test]
+command = [
+  "cargo",
+  "test",
+  "--color=always",
+  "--workspace",
+  "--exclude",
+  "daisy-garden",
+  "--target",
+  "aarch64-apple-darwin",
+]
+need_stdout = true
+
+[jobs.doc]
+command = ["cargo", "doc", "--color=always", "--all-features", "--no-deps"]
+need_stdout = false
+
+
+[keybindings]
+c = "job:clippy"
+t = "job:test"
+d = "job:doc"
