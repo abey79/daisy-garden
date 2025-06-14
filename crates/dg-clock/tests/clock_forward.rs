@@ -1,4 +1,4 @@
-use dg_traits::{GateIn, GateOut};
+use dg_traits::{ClockIn, ClockOut};
 use embassy_futures::select::{Either, select};
 use embassy_time::{Duration, Instant, Timer};
 use std::cmp::Reverse;
@@ -42,13 +42,13 @@ impl From<(Instant, Duration)> for Pulse {
 }
 
 #[derive(Debug, Clone)]
-pub struct MockGateIn {
+pub struct MockClockIn {
     events: BinaryHeap<Reverse<Instant>>,
 }
 
-impl MockGateIn {
+impl MockClockIn {
     pub fn new(events: impl IntoIterator<Item = Instant>) -> Self {
-        MockGateIn {
+        MockClockIn {
             events: events.into_iter().map(Reverse).collect(),
         }
     }
@@ -58,7 +58,7 @@ impl MockGateIn {
     }
 }
 
-impl GateIn for MockGateIn {
+impl ClockIn for MockClockIn {
     async fn wait(&mut self) -> Instant {
         let now = Instant::now();
         while let Some(Reverse(next_event)) = self.events.peek() {
@@ -80,17 +80,17 @@ impl GateIn for MockGateIn {
 }
 
 #[derive(Debug)]
-pub struct MockGateOut<'a> {
+pub struct MockClockOut<'a> {
     pulses: &'a mut Vec<Pulse>,
 }
 
-impl<'a> MockGateOut<'a> {
+impl<'a> MockClockOut<'a> {
     pub fn new(pulses: &'a mut Vec<Pulse>) -> Self {
         Self { pulses }
     }
 }
 
-impl GateOut for MockGateOut<'_> {
+impl ClockOut for MockClockOut<'_> {
     async fn emit_pulse(&mut self, duration: Duration) {
         let now = Instant::now();
         self.pulses.push(Pulse::new(now, duration));
@@ -99,32 +99,32 @@ impl GateOut for MockGateOut<'_> {
 }
 
 #[tokio::test]
-async fn test_mock_gate_in() {
+async fn test_mock_clock_in() {
     let now = Instant::now();
-    let mut gate_in = MockGateIn::new([
+    let mut clock_in = MockClockIn::new([
         now + Duration::from_millis(10),
         now + Duration::from_millis(20),
         now + Duration::from_millis(30),
     ]);
 
-    assert_eq!(gate_in.wait().await, now + Duration::from_millis(10));
-    assert_eq!(gate_in.wait().await, now + Duration::from_millis(20));
-    assert_eq!(gate_in.wait().await, now + Duration::from_millis(30));
+    assert_eq!(clock_in.wait().await, now + Duration::from_millis(10));
+    assert_eq!(clock_in.wait().await, now + Duration::from_millis(20));
+    assert_eq!(clock_in.wait().await, now + Duration::from_millis(30));
 }
 
 #[tokio::test]
-async fn test_mock_gate_in_drops_past_event() {
+async fn test_mock_clock_in_drops_past_event() {
     let now = Instant::now();
-    let mut gate_in = MockGateIn::new([
+    let mut clock_in = MockClockIn::new([
         now + Duration::from_millis(10),
         now + Duration::from_millis(20),
         now + Duration::from_millis(30),
     ]);
 
-    assert_eq!(gate_in.wait().await, now + Duration::from_millis(10));
+    assert_eq!(clock_in.wait().await, now + Duration::from_millis(10));
     Timer::after(Duration::from_millis(15)).await;
-    assert_eq!(gate_in.wait().await, now + Duration::from_millis(30));
-    assert!(gate_in.is_empty());
+    assert_eq!(clock_in.wait().await, now + Duration::from_millis(30));
+    assert!(clock_in.is_empty());
 }
 
 #[tokio::test]
@@ -134,11 +134,11 @@ async fn test_clock_forward() {
 
     {
         let mut clock_forward_mut = pin!(dg_clock::clock_forward(
-            MockGateIn::new([
+            MockClockIn::new([
                 now + Duration::from_millis(10),
                 now + Duration::from_millis(20),
             ]),
-            MockGateOut::new(&mut pulses),
+            MockClockOut::new(&mut pulses),
             Duration::from_millis(5),
         ));
 
@@ -169,12 +169,12 @@ async fn test_clock_forward_drops_pulse() {
 
     {
         let mut clock_forward_mut = pin!(dg_clock::clock_forward(
-            MockGateIn::new([
+            MockClockIn::new([
                 now + Duration::from_millis(10),
                 now + Duration::from_millis(20),
                 now + Duration::from_millis(30),
             ]),
-            MockGateOut::new(&mut pulses),
+            MockClockOut::new(&mut pulses),
             Duration::from_millis(15),
         ));
 

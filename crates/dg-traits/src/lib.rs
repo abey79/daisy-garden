@@ -3,11 +3,11 @@
 
 use embassy_time::{Duration, Instant};
 
-pub trait GateIn {
+pub trait ClockIn {
     async fn wait(&mut self) -> Instant;
 }
 
-pub trait GateOut {
+pub trait ClockOut {
     async fn emit_pulse(&mut self, duration: Duration);
 }
 

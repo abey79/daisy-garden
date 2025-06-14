@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-mod gates;
+mod clocks;
 mod params;
 
 use daisy_embassy::led::UserLed;
@@ -20,7 +20,7 @@ use embassy_stm32::{
 use embassy_time::{Duration, Timer};
 use {defmt_rtt as _, panic_probe as _};
 
-use crate::gates::{ExtiInputGateIn, OutputGateOut};
+use crate::clocks::{ExtiInputClockIn, OutputClockOut};
 use crate::params::{AdcFloatParameter, AdcIntParameter};
 
 #[embassy_executor::main]
@@ -76,10 +76,14 @@ async fn blink(mut led: UserLed<'static>) {
 // ---
 
 #[embassy_executor::task(pool_size = 2)]
-async fn clock_forward(gate_in: ExtiInput<'static>, gate_out: Output<'static>, duration: Duration) {
+async fn clock_forward(
+    clock_in: ExtiInput<'static>,
+    clock_out: Output<'static>,
+    duration: Duration,
+) {
     dg_clock::clock_forward(
-        ExtiInputGateIn::new(gate_in),
-        OutputGateOut::new(gate_out),
+        ExtiInputClockIn::new(clock_in),
+        OutputClockOut::new(clock_out),
         duration,
     )
     .await;
@@ -87,14 +91,14 @@ async fn clock_forward(gate_in: ExtiInput<'static>, gate_out: Output<'static>, d
 
 #[embassy_executor::task]
 async fn clock_train(
-    gate_in: ExtiInput<'static>,
-    gate_out: Output<'static>,
+    clock_in: ExtiInput<'static>,
+    clock_out: Output<'static>,
     pulse_count: AdcIntParameter<'static, ADC1, PatchPinC5>,
     pulse_bpm: AdcFloatParameter<'static, ADC2, PatchPinC4>,
 ) {
     dg_clock::clock_train(
-        ExtiInputGateIn::new(gate_in),
-        OutputGateOut::new(gate_out),
+        ExtiInputClockIn::new(clock_in),
+        OutputClockOut::new(clock_out),
         pulse_count,
         pulse_bpm,
     )
