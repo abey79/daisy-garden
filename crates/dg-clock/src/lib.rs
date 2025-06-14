@@ -1,7 +1,7 @@
 #![no_std]
 
 use dg_traits::{ClockIn, ClockOut, FloatParameter, IntParameter};
-use embassy_time::{Duration, Timer};
+use embassy_time::{Duration, Ticker, Timer};
 
 /// Simple clock forwarder
 ///
@@ -39,5 +39,37 @@ pub async fn clock_train(
             clock_out.emit_pulse(pulse_width).await;
             Timer::after(rest_width).await;
         }
+    }
+}
+
+pub async fn clock(mut clock_out: impl ClockOut, mut pulse_pbm: impl FloatParameter) {
+    let mut ticker = VaryingTicker::default();
+
+    loop {
+        ticker.next(pulse_pbm.get().await).await;
+        clock_out.emit_pulse(Duration::from_millis(5)).await;
+    }
+}
+
+#[derive(Default)]
+struct VaryingTicker {
+    ticker: Option<Ticker>,
+    current_bpm: Option<f32>,
+}
+
+impl VaryingTicker {
+    pub async fn next(&mut self, bpm: f32) {
+        // invalidate ticker if bpm changed
+        if self.current_bpm != Some(bpm) {
+            self.ticker = None;
+            self.current_bpm = Some(bpm);
+        }
+
+        self.ticker
+            .get_or_insert_with(|| {
+                Ticker::every(Duration::from_micros(((60.0 * 1_000_000.0) / bpm) as u64))
+            })
+            .next()
+            .await;
     }
 }
