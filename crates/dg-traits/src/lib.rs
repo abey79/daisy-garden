@@ -10,3 +10,23 @@ pub trait GateIn {
 pub trait GateOut {
     async fn emit_pulse(&mut self, duration: Duration);
 }
+
+pub trait IntParameter {
+    async fn get(&mut self) -> i32;
+}
+
+impl IntParameter for i32 {
+    async fn get(&mut self) -> i32 {
+        *self
+    }
+}
+
+pub trait FloatParameter {
+    async fn get(&mut self) -> f32;
+}
+
+impl FloatParameter for f32 {
+    async fn get(&mut self) -> f32 {
+        *self
+    }
+}

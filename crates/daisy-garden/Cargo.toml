@@ -40,6 +40,7 @@ embassy-time = { workspace = true, features = [
   "tick-hz-32_768",
 ] }
 embassy-sync.workspace = true
+libm.workspace = true
 panic-probe.workspace = true
 
 
