@@ -9,6 +9,8 @@ version.workspace = true
 
 [dependencies]
 embassy-time.workspace = true
+embedded-hal.workspace = true
+embedded-hal-async.workspace = true
 
 [lints]
 workspace = true

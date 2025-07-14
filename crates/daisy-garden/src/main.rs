@@ -20,7 +20,6 @@ use embassy_stm32::{
 use embassy_time::{Duration, Timer};
 use {defmt_rtt as _, panic_probe as _};
 
-use crate::clocks::{ExtiInputClockIn, OutputClockOut};
 use crate::params::{AdcFloatParameter, AdcIntParameter};
 
 #[embassy_executor::main]
@@ -81,12 +80,7 @@ async fn clock_forward(
     clock_out: Output<'static>,
     duration: Duration,
 ) {
-    dg_clock::clock_forward(
-        ExtiInputClockIn::new(clock_in),
-        OutputClockOut::new(clock_out),
-        duration,
-    )
-    .await;
+    dg_clock::clock_forward(clock_in, clock_out, duration).await;
 }
 
 #[embassy_executor::task]
@@ -96,11 +90,5 @@ async fn clock_train(
     pulse_count: AdcIntParameter<'static, ADC1, PatchPinC5>,
     pulse_bpm: AdcFloatParameter<'static, ADC2, PatchPinC4>,
 ) {
-    dg_clock::clock_train(
-        ExtiInputClockIn::new(clock_in),
-        OutputClockOut::new(clock_out),
-        pulse_count,
-        pulse_bpm,
-    )
-    .await;
+    dg_clock::clock_train(clock_in, clock_out, pulse_count, pulse_bpm).await;
 }

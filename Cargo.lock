@@ -302,6 +302,8 @@ name = "dg-traits"
 version = "0.1.0-alpha.1"
 dependencies = [
  "embassy-time",
+ "embedded-hal 1.0.0",
+ "embedded-hal-async",
 ]
 
 [[package]]
