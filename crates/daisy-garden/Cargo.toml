@@ -17,8 +17,9 @@ workspace = true
 [features]
 
 [dependencies]
-dg-traits.workspace = true
 dg-clock.workspace = true
+dg-traits.workspace = true
+dg-noise.workspace = true
 
 cortex-m.workspace = true
 cortex-m-rt.workspace = true
@@ -34,12 +35,13 @@ embassy-executor = { workspace = true, features = [
   "defmt",
 ] }
 embassy-stm32.workspace = true
+embassy-sync.workspace = true
 embassy-time = { workspace = true, features = [
   "defmt",
   "defmt-timestamp-uptime",
   "tick-hz-32_768",
 ] }
-embassy-sync.workspace = true
+fhx.workspace = true
 libm.workspace = true
 panic-probe.workspace = true
 

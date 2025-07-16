@@ -6,7 +6,12 @@ default_job = "clippy"
 [jobs]
 
 [jobs.clippy]
-command = ["cargo", "clippy", "--color=always"]
+command = [
+  "cargo",
+  "clippy",
+  "--color=always",
+  "--target=thumbv7em-none-eabihf",
+]
 need_stdout = false
 
 
@@ -18,8 +23,6 @@ command = [
   "--workspace",
   "--exclude",
   "daisy-garden",
-  "--target",
-  "aarch64-apple-darwin",
 ]
 need_stdout = true
 

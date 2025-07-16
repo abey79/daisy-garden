@@ -1,0 +1,21 @@
+[package]
+name = "dg-noise"
+description = "Assorted noise utilities"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+libm.workspace = true
+rand_core.workspace = true
+rand.workspace = true
+
+[dev-dependencies]
+clap.workspace = true
+rand = { workspace = true, features = ["std", "std_rng"] }
+
+[lints]
+workspace = true

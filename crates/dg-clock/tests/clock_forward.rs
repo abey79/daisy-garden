@@ -1,9 +1,11 @@
-use dg_traits::{ClockIn, ClockOut};
-use embassy_futures::select::{Either, select};
-use embassy_time::{Duration, Instant, Timer};
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 use std::pin::pin;
+
+use embassy_futures::select::{Either, select};
+use embassy_time::{Duration, Instant, Timer};
+
+use dg_traits::{ClockIn, ClockOut};
 
 #[derive(Debug, Clone)]
 pub struct Pulse {

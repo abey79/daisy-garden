@@ -16,9 +16,11 @@ version = "0.1.0-alpha.1"
 # own crates
 daisy-garden = { path = "crates/daisy-garden", version = "=0.1.0-alpha.1", default-features = false }
 dg-clock = { path = "crates/dg-clock", version = "=0.1.0-alpha.1", default-features = false }
+dg-noise = { path = "crates/dg-noise", version = "=0.1.0-alpha.1", default-features = false }
 dg-traits = { path = "crates/dg-traits", version = "=0.1.0-alpha.1", default-features = false }
 
 # external crates
+clap = { version = "4.5", features = ["derive"] }
 cortex-m = { version = "0.7", features = [
   "inline-asm",
   "critical-section-single-core",
@@ -45,10 +47,16 @@ embassy-time = { version = "0.4.0", default-features = false }
 embassy-sync = { version = "0.6.2", features = ["defmt"] }
 embedded-hal = "1.0"
 embedded-hal-async = "1.0"
+fhx = { git = "https://github.com/daisy-embassy/fhx.git", rev = "25cb1e28cc6fe05cea09b9b1aa21ec43b0bce5bb" }
 futures = "0.3"
 libm = "0.2.15"
 panic-probe = { version = "0.3.2", features = ["print-defmt"] }
+rand_core = { version = "0.6", default-features = false } # sync with embassy-stm32
+rand = { version = "0.8.4", default-features = false, features = [
+  "small_rng",
+] } # sync with rand-core
 tokio = { version = "1.45", features = ["full"] }
+
 
 [patch.crates-io]
 #daisy-embassy = { git = "https://github.com/abey79/daisy-embassy.git", branch = "patch-sm" }
