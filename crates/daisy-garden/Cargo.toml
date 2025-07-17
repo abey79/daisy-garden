@@ -18,15 +18,31 @@ workspace = true
 
 [dependencies]
 dg-clock.workspace = true
-dg-traits.workspace = true
 dg-noise.workspace = true
+dg-types.workspace = true
 
+defmt.workspace = true
+embassy-stm32.workspace = true
+libm.workspace = true
+
+
+[dev-dependencies]
 cortex-m.workspace = true
 cortex-m-rt.workspace = true
 critical-section.workspace = true
-defmt.workspace = true
 defmt-rtt.workspace = true
 daisy-embassy.workspace = true
+embassy-sync.workspace = true
+fhx.workspace = true
+panic-probe.workspace = true
+
+
+[target.thumbv7em-none-eabihf.dev-dependencies]
+embassy-time = { workspace = true, features = [
+  "defmt",
+  "defmt-timestamp-uptime",
+  "tick-hz-32_768",
+] }
 embassy-executor = { workspace = true, features = [
   "task-arena-size-32768",
   "arch-cortex-m",
@@ -34,16 +50,3 @@ embassy-executor = { workspace = true, features = [
   "executor-interrupt",
   "defmt",
 ] }
-embassy-stm32.workspace = true
-embassy-sync.workspace = true
-embassy-time = { workspace = true, features = [
-  "defmt",
-  "defmt-timestamp-uptime",
-  "tick-hz-32_768",
-] }
-fhx.workspace = true
-libm.workspace = true
-panic-probe.workspace = true
-
-
-[dev-dependencies]

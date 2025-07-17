@@ -1,3 +1,5 @@
+#![cfg(not(all(target_arch = "arm", target_os = "none")))]
+
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::PathBuf;

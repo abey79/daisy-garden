@@ -1,23 +1,19 @@
 #![no_std]
 #![no_main]
 
-mod params;
-
 use daisy_embassy::led::UserLed;
 use daisy_embassy::new_daisy_board;
-use daisy_embassy::pins::{PatchPinC4, PatchPinC5};
 use defmt::info;
 use embassy_executor::Spawner;
-use embassy_stm32::mode::Async;
-use embassy_stm32::spi::Spi;
 use embassy_stm32::{
     Config, bind_interrupts,
-    exti::ExtiInput,
     gpio::{Level, Output, Pull, Speed},
-    peripherals::{self, ADC1, ADC2},
+    mode::Async,
+    peripherals::{self},
     rcc::{Pll, PllDiv, PllMul, PllPreDiv, PllSource},
     rng::{self, Rng},
     spi,
+    spi::Spi,
 };
 use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::channel::{Channel, Receiver, Sender};
@@ -27,8 +23,6 @@ use {defmt_rtt as _, panic_probe as _};
 
 use dg_noise::export::SmallRng;
 use dg_noise::{NoiseGenerator, RedNoiseGenerator};
-
-use crate::params::{AdcFloatParameter, AdcIntParameter};
 
 bind_interrupts!(struct Irqs {
     HASH_RNG => rng::InterruptHandler<peripherals::RNG>;
@@ -45,14 +39,6 @@ async fn main(spawner: Spawner) {
         mul: PllMul::MUL50,
         divp: None,
         divq: Some(PllDiv::DIV8), // SPI
-        divr: None,
-    });
-    config.rcc.pll2 = Some(Pll {
-        source: PllSource::HSI,
-        prediv: PllPreDiv::DIV4,
-        mul: PllMul::MUL50,
-        divp: Some(PllDiv::DIV8), // 100mhz
-        divq: None,
         divr: None,
     });
     config.rcc.hsi48 = Some(Default::default()); // needed for RNG
@@ -128,25 +114,6 @@ async fn main(spawner: Spawner) {
 
     info!("Staring...");
     spawner.spawn(blink(led)).unwrap();
-
-    // // Trigger pulses using the button
-    // spawner
-    //     .spawn(clock_forward(
-    //         ExtiInput::new(daisy_p.pins.b7, p.EXTI8, Pull::Up),
-    //         Output::new(daisy_p.pins.c10, Level::Low, Speed::Low),
-    //         Duration::from_millis(3),
-    //     ))
-    //     .unwrap();
-    //
-    // // Clock train
-    // spawner
-    //     .spawn(clock_train(
-    //         ExtiInput::new(daisy_p.pins.b10, p.EXTI13, Pull::Up),
-    //         Output::new(daisy_p.pins.b5, Level::Low, Speed::Low),
-    //         AdcIntParameter::new(Adc::new(p.ADC1), daisy_p.pins.c5, 1, 10),
-    //         AdcFloatParameter::new(Adc::new(p.ADC2), daisy_p.pins.c4, 80.0, 4000.0, true),
-    //     ))
-    //     .unwrap();
 }
 
 #[embassy_executor::task]
@@ -162,6 +129,8 @@ async fn blink(mut led: UserLed<'static>) {
 }
 
 // ---
+
+//TODO: abstract all of this
 
 enum FhxSetMessage {
     CvPolarity {
@@ -269,25 +238,4 @@ async fn red_noise_gate(
             })
             .await;
     }
-}
-
-// ---
-
-#[embassy_executor::task(pool_size = 2)]
-async fn clock_forward(
-    clock_in: ExtiInput<'static>,
-    clock_out: Output<'static>,
-    duration: Duration,
-) {
-    dg_clock::clock_forward(clock_in, clock_out, duration).await;
-}
-
-#[embassy_executor::task]
-async fn clock_train(
-    clock_in: ExtiInput<'static>,
-    clock_out: Output<'static>,
-    pulse_count: AdcIntParameter<'static, ADC1, PatchPinC5>,
-    pulse_bpm: AdcFloatParameter<'static, ADC2, PatchPinC4>,
-) {
-    dg_clock::clock_train(clock_in, clock_out, pulse_count, pulse_bpm).await;
 }

@@ -1,6 +1,6 @@
 #![no_std]
 
-use dg_traits::{ClockIn, ClockOut, FloatParameter, IntParameter};
+use dg_types::{ClockIn, ClockOut, FloatParameter, IntParameter};
 use embassy_time::{Duration, Ticker, Timer};
 
 /// Simple clock forwarder

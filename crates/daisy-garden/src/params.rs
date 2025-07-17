@@ -1,7 +1,7 @@
 use defmt::info;
 use embassy_stm32::adc::{Adc, AdcChannel, Instance};
 
-use dg_traits::IntParameter;
+use dg_types::IntParameter;
 
 pub struct AdcIntParameter<'d, T, P>
 where
@@ -103,7 +103,7 @@ where
     }
 }
 
-impl<'d, T, P> dg_traits::FloatParameter for AdcFloatParameter<'d, T, P>
+impl<'d, T, P> dg_types::FloatParameter for AdcFloatParameter<'d, T, P>
 where
     T: Instance,
     P: AdcChannel<T> + 'd,

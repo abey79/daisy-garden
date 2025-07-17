@@ -11,6 +11,7 @@ command = [
   "clippy",
   "--color=always",
   "--target=thumbv7em-none-eabihf",
+  "--workspace",
 ]
 need_stdout = false
 
@@ -21,8 +22,8 @@ command = [
   "test",
   "--color=always",
   "--workspace",
-  "--exclude",
-  "daisy-garden",
+  "--all-features",
+  "--exclude=daisy-garden", # it brings conflicting features
 ]
 need_stdout = true
 

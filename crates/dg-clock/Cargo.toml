@@ -8,15 +8,16 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[features]
+host-testing = ["embassy-time/std", "embassy-time/generic-queue-8"]
+
 [dependencies]
-dg-traits.workspace = true
+dg-types.workspace = true
 
 embassy-time.workspace = true
 
 
 [dev-dependencies]
-embassy-time = { workspace = true, features = ["std", "generic-queue-8"] }
-#embassy-executor = { workspace = true, features = ["arch-std", "executor-thread"] }
 embassy-futures.workspace = true
 tokio.workspace = true
 
