@@ -1,77 +1,22 @@
 #![no_std]
 #![no_main]
 
-//! Pulse train generator example
-//!
-//! ```raw
-//!                     ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
-//!                     ┃   .─.             .─.   ┃
-//!      train count ───╋─▶(   )           (   )◀─╋─── train rate
-//!                     ┃   `─'             `─'   ┃
-//!                     ┃                         ┃
-//!                     ┃                         ┃
-//!                     ┃   .─.             .─.   ┃
-//!                     ┃  (   )           (   )  ┃
-//!                     ┃   `─'             `─'   ┃
-//!                     ┃                         ┃
-//!                     ┃            ,       .    ┃
-//!       trig pulse ───╋─▶ o        o      ( ) ◀─╋─── pulse out
-//!                     ┃            '       '    ┃
-//!                     ┃                         ┃
-//!                     ┃               ┌─────────╋─── pulse train out
-//!                     ┃   .     .     ▼     .   ┃
-//! trig pulse train ───╋─▶( )   ( )   ( )   ( )  ┃
-//!                     ┃   '     '     '     '   ┃
-//!                     ┃                         ┃
-//!                     ┃                         ┃
-//!                     ┃   .     .     .     .   ┃
-//!                     ┃  ( )   ( )   ( )   ( )  ┃
-//!                     ┃   '     '     '     '   ┃
-//!                     ┃                         ┃
-//!                     ┃                         ┃
-//!                     ┃   .     .     .     .   ┃
-//!                     ┃  ( )   ( )   ( )   ( )  ┃
-//!                     ┃   '     '     '     '   ┃
-//!                     ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
-//! ```
-
-use daisy_embassy::{
-    led::UserLed,
-    new_daisy_board,
-    pins::{PatchPinC4, PatchPinC5},
-};
-use defmt::info;
+use daisy_embassy::pins::{PatchPinC4, PatchPinC5};
 use embassy_executor::Spawner;
 use embassy_stm32::{
-    Config,
     adc::Adc,
     exti::ExtiInput,
     gpio::{Level, Output, Pull, Speed},
     peripherals::{ADC1, ADC2},
-    rcc::{Pll, PllDiv, PllMul, PllPreDiv, PllSource},
 };
-use embassy_time::{Duration, Timer};
+use embassy_time::Duration;
 use {defmt_rtt as _, panic_probe as _};
 
-use daisy_garden::{AdcFloatParameter, AdcIntParameter};
+use daisy_garden::{AdcFloatParameter, AdcIntParameter, PatchInit};
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
-    let mut config = Config::default();
-    config.rcc.pll2 = Some(Pll {
-        source: PllSource::HSI,
-        prediv: PllPreDiv::DIV4,
-        mul: PllMul::MUL50,
-        divp: Some(PllDiv::DIV8), // ADC1
-        divq: None,
-        divr: None,
-    });
-    config.rcc.hsi48 = Some(Default::default()); // needed for RNG
-
-    let p = embassy_stm32::init(config);
-
-    let daisy_p = new_daisy_board!(p);
-    let led = daisy_p.user_led;
+    let patch_init = PatchInit::new(&spawner);
 
     //
     // Push button triggers a pulse
@@ -79,8 +24,9 @@ async fn main(spawner: Spawner) {
 
     spawner
         .spawn(clock_forward(
-            ExtiInput::new(daisy_p.pins.b7, p.EXTI8, Pull::Up),
-            Output::new(daisy_p.pins.c10, Level::Low, Speed::Low),
+            ExtiInput::new(patch_init.b7, patch_init.EXTI8, Pull::Up),
+            //Note: CV out can also be used as a gate out....
+            Output::new(patch_init.cv_out_1, Level::Low, Speed::Low),
             Duration::from_millis(3),
         ))
         .unwrap();
@@ -91,34 +37,19 @@ async fn main(spawner: Spawner) {
 
     spawner
         .spawn(clock_train(
-            ExtiInput::new(daisy_p.pins.b10, p.EXTI13, Pull::Up),
-            Output::new(daisy_p.pins.b5, Level::Low, Speed::Low),
-            AdcIntParameter::new(Adc::new(p.ADC1), daisy_p.pins.c5, 1, 10),
-            AdcFloatParameter::new(Adc::new(p.ADC2), daisy_p.pins.c4, 80.0, 4000.0, true),
+            ExtiInput::new(patch_init.gate_in_1, patch_init.EXTI13, Pull::Up),
+            Output::new(patch_init.gate_out_1, Level::Low, Speed::Low),
+            AdcIntParameter::new(Adc::new(patch_init.ADC1), patch_init.cv_1, 1, 10),
+            AdcFloatParameter::new(
+                Adc::new(patch_init.ADC2),
+                patch_init.cv_2,
+                80.0,
+                4000.0,
+                true,
+            ),
         ))
         .unwrap();
-
-    //
-    // Blinker
-    //
-
-    info!("Staring...");
-    spawner.spawn(blink(led)).unwrap();
 }
-
-#[embassy_executor::task]
-async fn blink(mut led: UserLed<'static>) {
-    loop {
-        led.on();
-        Timer::after_millis(300).await;
-
-        led.off();
-        Timer::after_millis(300).await;
-        //info!("Blip");
-    }
-}
-
-// ---
 
 #[embassy_executor::task(pool_size = 2)]
 async fn clock_forward(

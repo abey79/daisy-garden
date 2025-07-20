@@ -5,7 +5,7 @@ use embassy_time::{Duration, Ticker, Timer};
 
 /// Simple clock forwarder
 ///
-/// With the patch.Init(), this can be useful to wire the B7 push button to one of the output. This
+/// With the patch.Init(), this can be useful to wire the b7 push button to one of the output. This
 /// way, pulses can be triggered manually for testing purposes.
 pub async fn clock_forward(
     mut clock_in: impl ClockIn,
